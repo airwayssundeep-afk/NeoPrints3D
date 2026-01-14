@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NeoPrint Labs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Helvetica Neue", Arial, sans-serif; }
+
+:root {
+    --gold:#c8a46b;
+    --silver:#c0c0c0;
+    --text:#222;
+    --white:#ffffff;
+    --soft:#f8f8f8;
+}
+
+body { background:var(--soft); color:var(--text); }
+
+header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:25px 60px;
+    border-bottom:1px solid rgba(0,0,0,0.05);
+    position:sticky;
+    top:0;
+    background:var(--white);
+    z-index:100;
+}
+
+header img { height:50px; }
+
+nav a {
+    margin-left:30px;
+    text-decoration:none;
+    color:var(--text);
+    font-weight:500;
+    transition:all 0.2s ease;
+}
+nav a:hover { color:var(--gold); transform:translateY(-2px); }
+
+section { padding:80px 60px; }
+
+.hero {
+    text-align:center;
+    padding:120px 20px;
+    background:linear-gradient(90deg,#fff,#fdf5e6,#e6e6e6);
+}
+.hero h1 { font-size:3rem; letter-spacing:3px; color:var(--gold); }
+.hero p { max-width:650px; margin:20px auto 40px; }
+
+.hero button {
+    padding:14px 45px;
+    background:var(--gold);
+    border:none;
+    color:white;
+    border-radius:30px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:all 0.2s ease;
+}
+.hero button:hover { transform:translateY(-2px); box-shadow:0 6px 12px rgba(0,0,0,0.15); }
+
+.about { display:grid; grid-template-columns:repeat(2,1fr); gap:60px; background:var(--white); }
+
+.services { text-align:center; }
+
+.cards {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:40px;
+}
+
+.card {
+    padding:40px;
+    background:white;
+    border-radius:18px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
+    transition:all 0.2s ease;
+}
+.card:hover { transform:translateY(-3px); box-shadow:0 12px 24px rgba(0,0,0,0.1); }
+
+.products { display:none; }
+
+.product-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:30px;
+    max-width:1200px;
+    margin:auto;
+}
+
+.product-card {
+    background:white;
+    border-radius:12px;
+    padding:15px;
+    text-align:center;
+    box-shadow:0 5px 15px rgba(0,0,0,0.05);
+    cursor:pointer;
+    transition:all 0.2s ease;
+}
+.product-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(0,0,0,0.1); }
+
+.product-image {
+    height:160px;
+    background:#f0f0f0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:8px;
+    margin-bottom:15px;
+    color:#aaa;
+    transition:all 0.2s ease;
+}
+
+#product-detail,
+#name-tag-customiser,
+#view-cart {
+    display:none;
+    max-width:900px;
+    margin:40px auto;
+    text-align:center;
+    padding:40px;
+    background:white;
+    border-radius:12px;
+}
+
+.back-button {
+    margin-bottom:30px;
+    padding:10px 20px;
+    background:var(--silver);
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    transition:all 0.2s ease;
+}
+.back-button:hover { transform:translateY(-2px); box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+
+#tag-preview {
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    margin:30px auto;
+    transition:all 0.3s ease;
+}
+
+.attachment-image {
+    position:absolute;
+    top:-10%;
+    right:-10%;
+    width:25%;
+    height:25%;
+    pointer-events:none;
+    transition:all 0.2s ease;
+}
+
+select, input[type=text] {
+    padding:10px;
+    border-radius:12px;
+    border:1px solid #ddd;
+    margin:10px;
+    cursor:pointer;
+    transition:all 0.2s ease;
+}
+select:hover, input[type=text]:hover { transform:translateY(-2px); box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+
+footer {
+    padding:40px;
+    text-align:center;
+    color:var(--silver);
+    background:white;
+}
+</style>
+
+<script>
+let cart = [];
+
+function hideAll() {
+    ["hero","about","services","products","product-detail","name-tag-customiser","view-cart"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.style.display="none";
+    });
+}
+
+function goHome() { hideAll(); ["hero","about","services"].forEach(id=>document.getElementById(id).style.display="block"); }
+
+function showProducts() { hideAll(); document.getElementById("products").style.display="block"; }
+
+function showProductDetail(name) {
+    hideAll();
+    document.getElementById("product-detail").style.display="block";
+    document.getElementById("detail-name").textContent = name;
+}
+
+function showNameTagCustomizer() {
+    hideAll();
+    document.getElementById("name-tag-customiser").style.display="block";
+    updateTagPreview();
+}
+
+function updateTagPreview() {
+    const name = document.getElementById("tag-name").value || "Your Name";
+    const bgColor = document.getElementById("tag-color").value;
+    const textColor = document.getElementById("tag-text-color").value;
+    const font = document.getElementById("tag-font").value;
+    const fontSize = document.getElementById("tag-font-size").value;
+    const keychainSize = document.getElementById("tag-size").value;
+    const attachment = document.getElementById("tag-attachment").value;
+    const shape = document.getElementById("tag-shape").value;
+
+    const preview = document.getElementById("tag-preview");
+    preview.textContent = name;
+    preview.style.background = bgColor;
+    preview.style.color = textColor;
+    preview.style.fontFamily = font;
+    preview.style.fontSize = fontSize + "px";
+    preview.style.width = (50 + Number(keychainSize)) + "px";
+    preview.style.height = (50 + Number(keychainSize)) + "px";
+
+    // Shape using clip-path
+    switch(shape){
+        case "Circle": preview.style.clipPath="circle(50%)"; break;
+        case "Oval": preview.style.clipPath="ellipse(50% 35%)"; break;
+        case "Hexagon": preview.style.clipPath="polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%)"; break;
+        case "Star": preview.style.clipPath="polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)"; break;
+        default: preview.style.clipPath="inset(0%)";
+    }
+
+    // Attachment image
+    const attachImg = document.getElementById("attachment-image");
+    if(attachment==="Keyring") attachImg.src="https://i.imgur.com/2kpXjWy.png";
+    else if(attachment==="Hole") attachImg.src="https://i.imgur.com/4c9D0WD.png";
+    else if(attachment==="Magnet") attachImg.src="https://i.imgur.com/u2svrOu.png";
+    else attachImg.src="";
+}
+
+function addToCart() {
+    const item = {
+        name: document.getElementById("tag-name").value || "Your Name",
+        bgColor: document.getElementById("tag-color").value,
+        textColor: document.getElementById("tag-text-color").value,
+        font: document.getElementById("tag-font").value,
+        fontSize: document.getElementById("tag-font-size").value,
+        keychainSize: document.getElementById("tag-size").value,
+        attachment: document.getElementById("tag-attachment").value,
+        shape: document.getElementById("tag-shape").value
+    };
+    cart.push(item);
+    alert("Added to cart!");
+}
+
+function removeFromCart(index){
+    cart.splice(index,1);
+    showCart();
+}
+
+function showCart() {
+    hideAll();
+    const cartDiv = document.getElementById("view-cart");
+    cartDiv.style.display="block";
+    cartDiv.innerHTML = "";
+
+    if(cart.length === 0){
+        const empty = document.createElement("h2");
+        empty.textContent = "Your Cart is Empty";
+        cartDiv.appendChild(empty);
+    } else {
+        const title = document.createElement("h2");
+        title.textContent = "Mini Cart";
+        cartDiv.appendChild(title);
+
+        cart.forEach((item,i)=>{
+            const p = document.createElement("p");
+            p.innerHTML = `<strong>Item ${i+1}:</strong> ${item.name} | BG: ${item.bgColor} | Text: ${item.textColor} | Font: ${item.font} | Size: ${item.fontSize}px | Keychain: ${item.keychainSize}px | Attachment: ${item.attachment} | Shape: ${item.shape} `;
+            const btn = document.createElement("button");
+            btn.textContent = "Remove";
+            btn.style.marginLeft = "10px";
+            btn.onclick = ()=>removeFromCart(i);
+            p.appendChild(btn);
+            cartDiv.appendChild(p);
+        });
+    }
+}
+</script>
+
+<body>
+
+<header>
+    <img src="logo.png" alt="NeoPrint Labs">
+    <nav>
+        <a href="#" onclick="goHome()">Home</a>
+        <a href="#" onclick="showProducts()">Products</a>
+        <a href="#" onclick="showCart()">View Cart</a>
+    </nav>
+</header>
+
+<section class="hero" id="hero">
+    <h1>NEOPRINT LABS</h1>
+    <p>A minimalist print studio focused on precision and premium design.</p>
+    <button onclick="showProducts()">View Products</button>
+</section>
+
+<section class="about" id="about">
+    <div>
+        <h2>Our Studio</h2>
+        <p>Premium minimalist printing with refined materials.</p>
+    </div>
+    <div>
+        <h2>Our Approach</h2>
+        <p>Clean. Timeless. Purposeful.</p>
+    </div>
+</section>
+
+<section class="services" id="services">
+    <h2>Services</h2>
+    <div class="cards">
+        <div class="card"><h3>Premium Printing</h3></div>
+        <div class="card"><h3>Brand Design</h3></div>
+        <div class="card"><h3>Custom Work</h3></div>
+    </div>
+</section>
+
+<section class="products" id="products">
+    <h2>Products</h2>
+    <div class="product-grid">
+        <div class="product-card" onclick="showNameTagCustomizer()">
+            <div class="product-image">Preview</div>
+            <h4>Personalised Name Tag</h4>
+            <p>£9.99</p>
+        </div>
+        <div class="product-card" onclick="showProductDetail('Business Cards')">
+            <div class="product-image">Image</div>
+            <h4>Business Cards</h4>
+        </div>
+    </div>
+</section>
+
+<div id="name-tag-customiser">
+    <button class="back-button" onclick="showProducts()">← Back</button>
+    <div id="tag-preview" style="background:#c8a46b;width:100px;height:100px;">
+        <img id="attachment-image" class="attachment-image" src="">
+        Your Name
+    </div>
+
+    <input id="tag-name" placeholder="Enter name" oninput="updateTagPreview()">
+
+    <label>Font:</label>
+    <select id="tag-font" onchange="updateTagPreview()">
+        <option value="Arial, sans-serif">Arial</option>
+        <option value="'Helvetica Neue', sans-serif">Helvetica Neue</option>
+        <option value="'Courier New', monospace">Courier New</option>
+        <option value="'Times New Roman', serif">Times New Roman</option>
+        <option value="'Verdana', sans-serif">Verdana</option>
+    </select>
+
+    <label>Font Size:</label>
+    <select id="tag-font-size" onchange="updateTagPreview()">
+        <option value="12">Small</option>
+        <option value="18" selected>Medium</option>
+        <option value="24">Large</option>
+        <option value="30">X-Large</option>
+    </select>
+
+    <label>Keychain Size:</label>
+    <select id="tag-size" onchange="updateTagPreview()">
+        <option value="50">Small</option>
+        <option value="70" selected>Medium</option>
+        <option value="90">Large</option>
+        <option value="110">X-Large</option>
+        <option value="130">XX-Large</option>
+    </select>
+
+    <label>Shape:</label>
+    <select id="tag-shape" onchange="updateTagPreview()">
+        <option value="Rectangle">Rectangle</option>
+        <option value="Circle">Circle</option>
+        <option value="Oval">Oval</option>
+        <option value="Hexagon">Hexagon</option>
+        <option value="Star">Star</option>
+    </select>
+
+    <label>Background Color:</label>
+    <select id="tag-color" onchange="updateTagPreview()">
+        <option value="red">Red</option>
+        <option value="orange">Orange</option>
+        <option value="yellow">Yellow</option>
+        <option value="green">Green</option>
+        <option value="blue">Blue</option>
+        <option value="indigo">Indigo</option>
+        <option value="violet">Violet</option>
+        <option value="black">Black</option>
+        <option value="grey">Grey</option>
+        <option value="white">White</option>
+    </select>
+
+    <label>Text Color:</label>
+    <select id="tag-text-color" onchange="updateTagPreview()">
+        <option value="#c8a46b">Gold</option>
+        <option value="black">Black</option>
+        <option value="white">White</option>
+        <option value="grey">Grey</option>
+    </select>
+
+    <label>Attachment:</label>
+    <select id="tag-attachment" onchange="updateTagPreview()">
+        <option value="Keyring">Keyring</option>
+        <option value="Magnet">Magnet</option>
+        <option value="Hole">Hole</option>
+    </select>
+
+    <br>
+    <button onclick="addToCart()">Add to Cart</button>
+</div>
+
+<div id="product-detail">
+    <button class="back-button" onclick="showProducts()">← Back</button>
+    <h2 id="detail-name"></h2>
+</div>
+
+<div id="view-cart"></div>
+
+<footer>
+    © 2026 NeoPrint Labs — Crafted with Precision
+</footer>
+
+</body>
+</html>
+
