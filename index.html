@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NeoPrint Labs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ---------------- RESET ---------------- */
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Helvetica Neue", Arial, sans-serif; }
+
+/* ---------------- COLORS ---------------- */
+:root {
+    --gold:#c8a46b;
+    --silver:#c0c0c0;
+    --text:#222;
+    --white:#ffffff;
+    --soft:#f8f8f8;
+}
+
+/* ---------------- BODY ---------------- */
+body { background:var(--soft); color:var(--text); }
+
+/* ---------------- HEADER ---------------- */
+header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:25px 60px;
+    border-bottom:1px solid rgba(0,0,0,0.05);
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:var(--white);
+}
+header img { height:50px; }
+nav a {
+    margin-left:30px;
+    text-decoration:none;
+    color:var(--text);
+    font-weight:500;
+    transition:color 0.3s ease;
+}
+nav a:hover { color:var(--gold); }
+
+/* ---------------- SECTIONS ---------------- */
+section { padding:80px 60px; }
+
+/* ---------------- HERO ---------------- */
+.hero {
+    text-align:center;
+    padding:120px 20px;
+    border-bottom:1px solid rgba(0,0,0,0.05);
+    background-color:#fdfdfd;
+    background-image:
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 1px, transparent 1px, transparent 60px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 60px),
+        linear-gradient(90deg, #ffffff, #fdf5e6, #e6e6e6);
+    background-size:auto 60px;
+}
+.hero h1 { font-size:3rem; letter-spacing:3px; margin-bottom:20px; color:var(--gold); }
+.hero p { max-width:650px; margin:auto; font-size:1.15rem; margin-bottom:40px; color:var(--text); }
+.hero button {
+    padding:14px 45px;
+    background:var(--gold);
+    border:2px solid var(--gold);
+    color:var(--white);
+    border-radius:30px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:all 0.3s ease;
+}
+.hero button:hover { background:var(--silver); color:var(--white); transform:translateY(-2px); }
+
+/* ---------------- ABOUT ---------------- */
+.about {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:60px;
+    background-color:var(--white);
+}
+.about h2 { font-size:2rem; margin-bottom:15px; color:var(--gold); }
+.about p { color:var(--text); }
+
+/* ---------------- SERVICES ---------------- */
+.services {
+    text-align:center;
+    background-color:#fdfdfd;
+    background-image:
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 2px, transparent 2px, transparent 80px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 80px),
+        linear-gradient(180deg, #ffffff, #f7f3e9, #e6e6e6);
+    background-size:80px auto;
+}
+.services h2 { font-size:2.3rem; margin-bottom:60px; color:var(--gold); }
+.cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:40px; }
+.card {
+    padding:40px;
+    border-radius:18px;
+    background:rgba(255,255,255,0.9);
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
+    transition:transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover { transform:translateY(-5px); box-shadow:0 15px 30px rgba(0,0,0,0.08); }
+.card h3 { margin-bottom:15px; color:var(--gold); }
+.card p { color:var(--text); }
+
+/* ---------------- PRODUCTS ---------------- */
+.products {
+    display:none;
+    padding-bottom:80px;
+    background-color:#fdfdfd;
+    background-image:
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 50px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 50px),
+        linear-gradient(90deg, #ffffff, #f7f5e6, #e6e6e6);
+    background-size:auto 50px;
+}
+.products h2 { text-align:center; font-size:2.4rem; margin-bottom:50px; color:var(--gold); }
+
+/* --- AMAZON-STYLE GRID --- */
+.product-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:30px;
+    max-width:1200px;
+    margin:auto;
+}
+.product-card {
+    background:rgba(255,255,255,0.85);
+    border-radius:12px;
+    padding:15px;
+    text-align:center;
+    box-shadow:0 5px 15px rgba(0,0,0,0.05);
+    transition:transform 0.3s ease, box-shadow 0.3s ease;
+    cursor:pointer;
+}
+.product-card:hover { transform:translateY(-5px); box-shadow:0 15px 30px rgba(0,0,0,0.1); }
+.product-image {
+    width:100%;
+    height:160px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:8px;
+    font-weight:bold;
+    color:#aaa;
+    background:#f0f0f0;
+    margin-bottom:15px;
+}
+
+/* --- PRODUCT DETAIL --- */
+#product-detail {
+    display:none;
+    max-width:900px;
+    margin:40px auto;
+    text-align:center;
+    padding:40px;
+    background-color:#fdfdfd;
+    background-image:
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 50px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 50px),
+        linear-gradient(90deg, #ffffff, #f7f5e9, #e6e6e6);
+    background-size:auto 50px;
+    border-radius:12px;
+}
+#product-detail .product-image { width:50%; height:300px; margin:auto; display:flex; align-items:center; justify-content:center; border-radius:12px; font-weight:bold; color:#aaa; }
+#product-detail h2 { margin-top:20px; color:var(--gold); }
+#product-detail p { margin:20px 0; color:var(--text); }
+#product-detail button { padding:15px 40px; background:var(--gold); border:none; color:white; border-radius:30px; font-weight:bold; cursor:pointer; margin-top:20px; }
+#product-detail .back-button { margin-bottom:30px; padding:10px 20px; background:var(--silver); border:none; border-radius:8px; cursor:pointer; }
+
+/* ---------------- FOOTER ---------------- */
+footer { padding:40px; text-align:center; font-size:0.9rem; color:var(--silver); background:var(--white); }
+
+/* ---------------- RESPONSIVE ---------------- */
+@media(max-width:900px){
+    header, section{padding:60px 30px;}
+    .about{grid-template-columns:1fr;}
+    #product-detail .product-image{width:80%; height:250px;}
+}
+</style>
+
+<script>
+function showProducts() {
+    document.getElementById("hero").style.display="none";
+    document.getElementById("about").style.display="none";
+    document.getElementById("services").style.display="none";
+    document.getElementById("products").style.display="block";
+    document.getElementById("product-detail").style.display="none";
+}
+
+function showProductDetail(productName) {
+    document.getElementById("products").style.display="none";
+    const detail = document.getElementById("product-detail");
+    detail.style.display="block";
+    document.getElementById("detail-name").textContent = productName;
+    document.getElementById("detail-desc").textContent = `Detailed description for ${productName}. Lorem ipsum dolor sit amet, consectetur adipiscing elit.`;
+    document.getElementById("detail-price").textContent = "$XX.XX";
+}
+
+function backToProducts() {
+    document.getElementById("product-detail").style.display="none";
+    document.getElementById("products").style.display="block";
+}
+</script>
+</head>
+
+<body>
+
+<header>
+    <img src="logo.png" alt="NeoPrint Labs Logo">
+    <nav>
+        <a href="#" onclick="document.getElementById('hero').style.display='block'; document.getElementById('about').style.display='block'; document.getElementById('services').style.display='block'; document.getElementById('products').style.display='none'; document.getElementById('product-detail').style.display='none';">Home</a>
+        <a href="#" onclick="showProducts()">Products</a>
+    </nav>
+</header>
+
+<section class="hero" id="hero">
+    <h1>NEOPRINT LABS</h1>
+    <p>A minimalist print studio focused on precision, natural textures, and premium design.</p>
+    <button onclick="showProducts()">View Products</button>
+</section>
+
+<section class="about" id="about">
+    <div>
+        <h2>Our Studio</h2>
+        <p>NeoPrint Labs blends modern design with realistic wood plank textures in white, gold, and silver tones, creating print solutions that feel warm, refined, and luxurious.</p>
+    </div>
+    <div>
+        <h2>Our Approach</h2>
+        <p>We believe in simplicity. Clean layouts, premium finishes, and thoughtful craftsmanship guide everything we create.</p>
+    </div>
+</section>
+
+<section class="services" id="services">
+    <h2>Services</h2>
+    <div class="cards">
+        <div class="card"><h3>Premium Printing</h3><p>High-quality paper stocks with flawless precision.</p></div>
+        <div class="card"><h3>Brand Design</h3><p>Minimalist visual identities built to last.</p></div>
+        <div class="card"><h3>Custom Work</h3><p>Bespoke projects crafted to your vision.</p></div>
+    </div>
+</section>
+
+<section class="products" id="products">
+    <h2>Products</h2>
+    <div class="product-grid" id="product-grid">
+        <div class="product-card" onclick="showProductDetail('Business Cards')">
+            <div class="product-image">Image</div>
+            <h4>Business Cards</h4>
+            <p class="price">$XX.XX</p>
+        </div>
+        <div class="product-card" onclick="showProductDetail('Packaging')">
+            <div class="product-image">Image</div>
+            <h4>Packaging</h4>
+            <p class="price">$XX.XX</p>
+        </div>
+        <div class="product-card" onclick="showProductDetail('Posters & Art Prints')">
+            <div class="product-image">Image</div>
+            <h4>Posters & Art Prints</h4>
+            <p class="price">$XX.XX</p>
+        </div>
+        <div class="product-card" onclick="showProductDetail('Stickers & Labels')">
+            <div class="product-image">Image</div>
+            <h4>Stickers & Labels</h4>
+            <p class="price">$XX.XX</p>
+        </div>
+        <div class="product-card" onclick="showProductDetail('Custom Projects')">
+            <div class="product-image">Image</div>
+            <h4>Custom Projects</h4>
+            <p class="price">$XX.XX</p>
+        </div>
+    </div>
+</section>
+
+<!-- Product Detail outside the products section -->
+<div id="product-detail">
+    <button class="back-button" onclick="backToProducts()">← Back to Products</button>
+    <div class="product-image" id="detail-image">Image</div>
+    <h2 id="detail-name">Product Name</h2>
+    <p id="detail-desc">Product description goes here.</p>
+    <p id="detail-price">$XX.XX</p>
+    <button>Buy Now</button>
+</div>
+
+<footer>
+    © 2026 NeoPrint Labs — Crafted with Precision
+</footer>
+
+</body>
+</html>
+
